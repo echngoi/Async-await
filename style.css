@@ -1,0 +1,52 @@
+.locvatimkiem {
+    margin-bottom: 10px;
+}
+.container {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+
+.left {
+  flex: 1;
+  min-width: 0; /* tránh overflow cho nội dung dài */
+}
+
+/* .right cố định rộng, nằm bên phải */
+.right {
+  width: 550px;
+  max-width: 40%;
+  box-sizing: border-box;
+  padding: 12px;
+  background: #f7f7f7;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+}
+.h3giohang {
+    text-align: center;
+    margin-bottom: 10px;
+} 
+/* Nút Thêm vào giỏ hàng mặc định */
+button.add-to-cart {
+  background-color: #f0f0f0;
+  color: #222;
+  border: 1px solid #aaa;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* Hover chuyển sang xanh lá */
+button.add-to-cart:hover:enabled {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+/* Disabled thành màu xám */
+button.add-to-cart:disabled {
+  background-color: #ccc;
+  color: #888;
+  border-color: #bbb;
+  cursor: not-allowed;
+}

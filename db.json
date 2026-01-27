@@ -1,0 +1,59 @@
+{
+  "products": [
+    {
+      "id": "1",
+      "name": "Laptop",
+      "price": 15000000,
+      "stock": 3
+    },
+    {
+      "id": "2",
+      "name": "Mouse",
+      "price": 200000,
+      "stock": 12
+    },
+    {
+      "name": "Monitor",
+      "price": 2000000,
+      "stock": 40,
+      "id": "4"
+    },
+    {
+      "name": "Printer",
+      "price": 2500000,
+      "stock": 25,
+      "id": "5"
+    },
+    {
+      "name": "USB Drive",
+      "price": 150000,
+      "stock": 4,
+      "id": "6"
+    },
+    {
+      "id": "7",
+      "name": "External Hard Drive",
+      "price": 1200000,
+      "stock": 8
+    },
+    {
+      "id": "8",
+      "name": "Webcam",
+      "price": 800000,
+      "stock": 12
+    },
+    {
+      "id": "9",
+      "name": "Headphones",
+      "price": 600000,
+      "stock": 17
+    },
+    {
+      "id": "10",
+      "name": "Speakers",
+      "price": 700000,
+      "stock": 8
+    }
+  ],
+  "cart": []
+}
