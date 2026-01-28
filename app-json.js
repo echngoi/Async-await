@@ -343,3 +343,19 @@ async function themVaoGioHang(index) {
   }
   await fetchCart();
 }
+// KIỂM TRA AUTH trước khi load app
+const token = localStorage.getItem("token");
+
+if (!token) {
+  // chuyển về login nếu không có token
+  window.location.replace("login.html");
+}
+
+// hàm đăng xuất
+function logout() {
+  localStorage.removeItem("token");
+  window.location.href = "login.html";
+}
+
+
+

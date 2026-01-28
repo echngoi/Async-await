@@ -11,7 +11,7 @@ async function login(username, password) {
     throw new Error("Sai tài khoản hoặc mật khẩu");
   }
 
-  localStorage.setItem("token", user.token);
+  localStorage.setItem("token", user.token); // Lưu token vào localStorage
 }
 
 // Sử dụng DOM để lấy phần tử
@@ -26,3 +26,8 @@ loginForm.addEventListener("submit", async (e) => {
     alert(err.message);
   }
 });
+
+const token = localStorage.getItem("token");
+if (token) {
+  window.location.replace("index.html");
+}
