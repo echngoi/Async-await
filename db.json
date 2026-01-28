@@ -15,7 +15,7 @@
     {
       "name": "Monitor",
       "price": 2000000,
-      "stock": 40,
+      "stock": 39,
       "id": "4"
     },
     {
@@ -40,7 +40,7 @@
       "id": "8",
       "name": "Webcam",
       "price": 800000,
-      "stock": 12
+      "stock": 11
     },
     {
       "id": "9",
