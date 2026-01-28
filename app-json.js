@@ -173,6 +173,17 @@ function clearFilter() {
 btnLoc.addEventListener('click', applyFilter);
 btnXoaBoLoc.addEventListener('click', clearFilter);
 
+// tùy chọn: thêm sản phẩm khi nhấn Enter trong ô input
+[nameInput, qtyInput, priceInput].forEach(el => {
+  if (!el) return;
+  el.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      themSanPham();
+    }
+});
+});
+
 // tùy chọn: lọc khi nhấn Enter trong ô filter name / price
 [filterInput, giaNhoNhatInput, giaLonNhatInput].forEach(el => {
   if (!el) return;
