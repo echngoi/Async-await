@@ -1,18 +1,6 @@
 {
   "products": [
     {
-      "id": "1",
-      "name": "Laptop",
-      "price": 15000000,
-      "stock": 3
-    },
-    {
-      "id": "2",
-      "name": "Mouse",
-      "price": 200000,
-      "stock": 12
-    },
-    {
       "name": "Monitor",
       "price": 2000000,
       "stock": 39,
@@ -53,36 +41,23 @@
       "name": "Speakers",
       "price": 700000,
       "stock": 8
-    },
-    {
-      "id": "59d2",
-      "name": "máy",
-      "price": 3,
-      "stock": 2
     }
   ],
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "username": "admin",
       "password": "123456",
+      "role": "admin",
       "token": "fake-jwt-token-admin"
-    }
-  ],
-  "cart": [
-    {
-      "id": "31b8",
-      "name": "Monitor",
-      "price": 2000000,
-      "quantity": 1,
-      "total": 2000000
     },
     {
-      "id": "f415",
-      "name": "USB Drive",
-      "price": 150000,
-      "quantity": 1,
-      "total": 150000
+      "id": "2",
+      "username": "user",
+      "password": "123456",
+      "role": "user",
+      "token": "fake-jwt-token-user"
     }
-  ]
+  ],
+  "cart": []
 }

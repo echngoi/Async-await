@@ -1,7 +1,7 @@
 // login.js
 async function login(username, password) {
   const res = await fetch("http://localhost:3000/users");
-  const users = await res.json();
+  const users = await res.json(); 
 
   const user = users.find(
     u => u.username === username && u.password === password
@@ -11,7 +11,11 @@ async function login(username, password) {
     throw new Error("Sai tài khoản hoặc mật khẩu");
   }
 
-  localStorage.setItem("token", user.token); // Lưu token vào localStorage
+    localStorage.setItem("user", JSON.stringify(user)); 
+    localStorage.setItem("token", user.token); 
+    localStorage.setItem("username", user.username);
+    localStorage.setItem("role", user.role);
+    
 }
 
 // Sử dụng DOM để lấy phần tử

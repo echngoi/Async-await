@@ -15,16 +15,46 @@ const qtyInput = document.getElementById('qtyInput');
 const priceInput = document.getElementById('priceInput');
 const addBtn = document.getElementById('addBtn');
 
+
+// Hiển thị thông tin người dùng hiện tại
+const userStr = localStorage.getItem("user");
+const currentUser = userStr ? JSON.parse(userStr) : null;
+if (currentUser) {
+  document.getElementById("userInfo").textContent = `Xin chào, ${currentUser.username}`;
+}
+
+// Hàm fetch với kiểm tra auth
+async function authFetch(url, options = {}) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("Chưa đăng nhập");
+  }
+  const headers ={
+    content: 'application/json', // Định dạng dữ liệu gửi đi
+    'Authorization': `Bearer ${token}`, // Thêm header Authorization
+    ...options.headers // giữ nguyên các header khác nếu có
+  };
+  const response = await fetch(url, { ...options, headers });
+  if (!response.ok) {
+    if (response.status === 401) {
+      logout();
+      throw new Error("token hết hạn, vui lòng đăng nhập lại");
+    }
+    throw new Error(`Lỗi API: ${response.status}`);
+}
+  return response;
+}
+
 // Fetch sản phẩm từ API
 async function fetchProducts() {
-  const res = await fetch('http://localhost:3000/products');
+  const res = await authFetch('http://localhost:3000/products');
   mangdanhsachsp = await res.json();
   hienThiSanPham();
 }
 
 // Fetch giỏ hàng từ API
 async function fetchCart() {
-  const res = await fetch('http://localhost:3000/cart');
+  const res = await authFetch('http://localhost:3000/cart');
   manggiohang = await res.json();
   hienThiGioHang();
   hienThiSanPham();
@@ -33,14 +63,14 @@ async function fetchCart() {
 // Lưu giỏ hàng lên API (ghi đè toàn bộ)
 async function saveCart() {
   // Xóa toàn bộ cart cũ
-  const res = await fetch('http://localhost:3000/cart');
+  const res = await authFetch('http://localhost:3000/cart');
   const oldCart = await res.json();
   for (const item of oldCart) {
-    await fetch(`http://localhost:3000/cart/${item.id}`, { method: 'DELETE' });
+    await authFetch(`http://localhost:3000/cart/${item.id}`, { method: 'DELETE' });
   }
   // Thêm lại từng item mới
   for (const item of manggiohang) {
-    await fetch('http://localhost:3000/cart', {
+    await authFetch('http://localhost:3000/cart', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(item)
@@ -59,7 +89,7 @@ async function themSanPham() {
   }
   if (trangthaiSua == null) {
     // Thêm mới
-    await fetch('http://localhost:3000/products', {
+    await authFetch('http://localhost:3000/products', {
       method: 'POST', 
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: tensp, price: giatien, stock: soluong }) // Dữ liệu sản phẩm mới
@@ -68,7 +98,7 @@ async function themSanPham() {
   } else {
     // Sửa
     const id = mangdanhsachsp[trangthaiSua].id; // Lấy id sản phẩm cần sửa
-    await fetch(`http://localhost:3000/products/${id}` , {
+    await authFetch(`http://localhost:3000/products/${id}` , {
       method: 'PUT',                                          // Sử dụng PUT để ghi đè toàn bộ dữ liệu
       headers: { 'Content-Type': 'application/json' },        // Định dạng dữ liệu gửi đi
       body: JSON.stringify({ name: tensp, price: giatien, stock: soluong }) // Ghi đè toàn bộ dữ liệu
@@ -84,9 +114,13 @@ async function themSanPham() {
 
 // Xóa sản phẩm qua API
 async function xoaSanPham(index) {
+  if (currentUser.role !== "admin") {
+    alert("Bạn không có quyền xóa sản phẩm");
+    return;
+  }
   if (index >= 0 && index < mangdanhsachsp.length) {
     const id = mangdanhsachsp[index].id; 
-    await fetch(`http://localhost:3000/products/${id}`, { method: 'DELETE' }); 
+    await authFetch(`http://localhost:3000/products/${id}`, { method: 'DELETE' }); 
     alert('Xóa sản phẩm thành công');
     await fetchProducts(); // Cập nhật lại danh sách sản phẩm
   }
@@ -133,12 +167,15 @@ function hienThiSanPham(list = mangdanhsachsp) {
       <td>${availableTotal}</td>
       <td>
         <button class="add-to-cart" ${available <= 0 ? 'disabled' : ''} onclick="themVaoGioHang(${i})">Thêm vào giỏ hàng</button>
-        <button style="background-color: red; color: white;" onclick="xoaSanPham(${i})">Xóa</button>
+        <button class="xoasp" style="background-color: red; color: white;" onclick="xoaSanPham(${i})">Xóa</button>
         <button style="background-color: blue; color: white;" onclick="suaSanPham(${i})">Sửa</button>
       </td>
     `;
     bangsanpham.appendChild(row);
   });
+  if (currentUser && currentUser.role !== 'admin') {
+      document.querySelectorAll('.xoasp').forEach(btn => btn.style.display = 'none');
+    }
 }
 
 // thêm sản phẩm bằng nút
@@ -249,7 +286,7 @@ function hienThiGioHang() {
 async function xoaKhoiGioHang(index) {
   if (index >= 0 && index < manggiohang.length) {
     const id = manggiohang[index].id;
-    await fetch(`http://localhost:3000/cart/${id}`, { method: 'DELETE' });
+    await authFetch(`http://localhost:3000/cart/${id}`, { method: 'DELETE' });
     await fetchCart(); // Cập nhật lại giỏ hàng
   }
 }
@@ -260,10 +297,10 @@ const btnThanhToan = document.getElementById('thanhtoan');
 if (btnXoaGio) {
   btnXoaGio.addEventListener('click', async () => { 
     // Xóa toàn bộ giỏ hàng trên server
-    const res = await fetch('http://localhost:3000/cart'); // Lấy giỏ hàng hiện tại
+    const res = await authFetch('http://localhost:3000/cart'); // Lấy giỏ hàng hiện tại
     const cart = await res.json();                        // Chuyển đổi sang JSON
     for (const item of cart) {  // Xóa từng mục trong giỏ hàng
-      await fetch(`http://localhost:3000/cart/${item.id}`, { method: 'DELETE' });
+      await authFetch(`http://localhost:3000/cart/${item.id}`, { method: 'DELETE' });
     }
     await fetchCart(); 
   });
@@ -288,7 +325,7 @@ if (btnThanhToan) {
     for (const item of manggiohang) {
       const sp = mangdanhsachsp.find(p => p.name === item.name);
       if (sp) {
-        await fetch(`http://localhost:3000/products/${sp.id}`, {
+        await authFetch(`http://localhost:3000/products/${sp.id}`, {
           method: 'PATCH',                                        // Cập nhật một phần dữ liệu
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ stock: Number(sp.stock) - Number(item.quantity) }) // Chỉ cập nhật trường stock
@@ -296,10 +333,10 @@ if (btnThanhToan) {
       }
     }
     // Xóa giỏ hàng trên server
-    const res = await fetch('http://localhost:3000/cart');  // Lấy giỏ hàng hiện tại
+    const res = await authFetch('http://localhost:3000/cart');  // Lấy giỏ hàng hiện tại
     const cart = await res.json(); // Chuyển đổi sang JSON
     for (const item of cart) {
-      await fetch(`http://localhost:3000/cart/${item.id}`, { method: 'DELETE' });
+      await authFetch(`http://localhost:3000/cart/${item.id}`, { method: 'DELETE' });
     }
     const totalText = document.getElementById('tongdonhang').textContent; 
     alert('Thanh toán thành công — tổng: ' + totalText);
@@ -320,7 +357,7 @@ async function themVaoGioHang(index) {
   }
   if (TimThayTrongGio) {
     // Cập nhật số lượng trên server
-    await fetch(`http://localhost:3000/cart/${TimThayTrongGio.id}`, {
+    await authFetch(`http://localhost:3000/cart/${TimThayTrongGio.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -330,7 +367,7 @@ async function themVaoGioHang(index) {
     });
   } else {
     // Thêm mới vào server
-    await fetch('http://localhost:3000/cart', {
+    await authFetch('http://localhost:3000/cart', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
@@ -354,6 +391,7 @@ if (!token) {
 // hàm đăng xuất
 function logout() {
   localStorage.removeItem("token");
+  localStorage.removeItem("user");
   window.location.href = "login.html";
 }
 
